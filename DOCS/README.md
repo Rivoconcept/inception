@@ -1,6 +1,21 @@
 # inception
 ![alt text](image-1.png)
 
+
+🔒 Configurer MariaDB avec Dockerfile + init.sql pour créer BDD + users.
+
+🛠️ Configurer WordPress avec Dockerfile + script d’installation PHP + wp-cli.
+
+🌐 Configurer NGINX avec TLS + redirection vers WordPress.
+
+📜 Générer les certificats TLS avec openssl.
+
+🧪 Tester la connexion à https://rhanitra.42.fr en local.
+
+🧼 Gérer les bons utilisateurs WordPress, sécuriser, et enlever le tag latest.
+
+
+
 Container : c'est l'activation d'une image de manière à faire tourner un processus.
     - 1 process (ou plusieurs)
     - isolation : cgroups / namespaces

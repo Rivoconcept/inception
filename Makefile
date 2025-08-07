@@ -13,7 +13,7 @@
 
 NAME = inception
 
-COMPOSE = docker-compose
+COMPOSE = docker compose
 COMPOSE_FILE = -f docker-compose.yml
 ENV_FILE = --env-file srcs/.env
 
