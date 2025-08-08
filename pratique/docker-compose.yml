@@ -1,0 +1,8 @@
+# version: '3.8'
+
+services:
+  myfirstservices:
+    image: alpine
+    restart: always
+    container_name: myalpine
+    entrypoint: pwd
