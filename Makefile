@@ -45,7 +45,7 @@ exec:
 
 fclean: down
 	docker system prune -af
-	sudo rm -rf /home/rhanitra/data/*
+	sudo rm -rf /home/inception/data/*
 
 re: fclean all
 

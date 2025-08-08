@@ -22,7 +22,6 @@ RUN chmod +x /generate_cert.sh /nginx_setup.sh
 EXPOSE 443
 
 # Exécute le script de configuration TLS et NGINX
-RUN /setup.sh
 
 ENTRYPOINT ["/nginx_setup.sh"]
 CMD ["nginx", "-g", "daemon off;"]

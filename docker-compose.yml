@@ -1,4 +1,4 @@
-version: "3.9"
+# version: "3.9"
 
 services:
   mariadb:
@@ -22,12 +22,11 @@ services:
       - inception
 
   nginx:
-    build:
-      context : ./srcs/requirements/nginx
+    build: ./srcs/requirements/nginx
     ports:
       - "443:443"
     volumes:
-      - wordpress-data:/var/www/html
+      - wordpress_data:/var/www/html:ro
     depends_on:
       - wordpress
     restart: always
@@ -40,7 +39,7 @@ volumes:
     name: mariadb_data
     driver_opts:
       type: none
-      device: /home/rhanitra/data/mariadb
+      device: /home/inception/data/mariadb
       o: bind
 
   wordpress_data:
@@ -48,7 +47,7 @@ volumes:
     name: wordpress_data
     driver_opts:
       type: none
-      device: /home/rhanitra/data/wordpress
+      device: /home/inception/data/wordpress
       o: bind
 
 networks:
