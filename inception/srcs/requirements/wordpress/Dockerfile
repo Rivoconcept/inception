@@ -1,5 +1,5 @@
 # Utilise une image légère avec PHP et extensions nécessaires
-FROM debian:bullseye
+FROM debian:bullseye-slim-slim
 
 # Met à jour le système et installe PHP + extensions, wget, curl, mariadb-client
 RUN apt-get update && apt-get install -y \
