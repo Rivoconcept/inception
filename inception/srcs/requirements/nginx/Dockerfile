@@ -1,5 +1,8 @@
 FROM debian:bullseye-slim
 
+
+WORKDIR /usr/share/nginx/html/
+
 RUN apt-get update && apt-get install -y \
     nginx \
     openssl \

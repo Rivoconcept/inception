@@ -1,23 +1,35 @@
 FROM debian:bullseye-slim
 
+LABEL app="mynginx" \
+      version="v1.0.0" \
+      description="Custom server nginx for inception"
+
+ENV NGINX_PORT=8080 \
+    NGINX_DOC_ROOT=/usr/share/nginx/html
+
+RUN apt-get update && apt-get install -y nginx \
+    && rm -rf /var/lib/apt/lists/*
+
 ARG UID=1000
 ARG GID=1000
-RUN addgroup -g $GID mygroup && \
-    adduser -D -u $UID -G mygroup rhanitra
 
-WORKDIR /usr/share/nginx/html
-
-RUN rm -rf ./*
+RUN addgroup --gid $GID mygroup \
+    && adduser --disabled-password --gecos "" --uid $UID --gid $GID rhanitra
 
 
-COPY ./dist/ .
+WORKDIR $NGINX_DOC_ROOT
 
-COPY ./nginx.conf /etc/nginx/nginx.conf
+RUN rm -rf ./* \
+    && mkdir -p /usr/share/nginx/html /var/run/nginx /var/log/nginx \
+    && chown -R rhanitra:mygroup /usr/share/nginx/html /var/run/nginx /var/log/nginx
+    
+COPY --chown=rhanitra:mygroup . .
 
-RUN chown -R rhanitra:mygroup /usr/share/nginx/html
+COPY --chown=rhanitra:mygroup /conf/default.conf /etc/nginx/conf.d/default.conf
 
 USER rhanitra
 
-EXPOSE 80
+EXPOSE $NGINX_PORT
 
 CMD ["nginx", "-g", "daemon off;"]
+
