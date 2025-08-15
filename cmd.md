@@ -2,6 +2,8 @@ docker run -d --name c1 --mount type=bind,source=/home/rivoinfo/Documents/test,d
 
 docker run -d --name c1 -v /home/rivoinfo/Documents/test/:/data/ myimage:v1.0 spleed infinity
 
+docker run -d --name c1 -v /myvolume/:/data/ -u xavki myimage:v1.0 sleep infinity
+
 docker network create --type=driver,subnet=192.168.50.0/30 mynet
 
 

@@ -5,16 +5,18 @@ services:
     build:
       context: ./srcs/requirements/nginx
       dockerfile: Dockerfile
-    image: mynginx:v1.0.0
-    container_name: mynginx
+      args:
+        - DOMAIN=${DOMAIN}
+    image: nginx:v1.0.0
+    container_name: nginx
     ports:
-      - "${NGINX_PORT}:8080"
+      - "443:443"
     volumes:
       - ./srcs/requirements/nginx/dist:/usr/share/nginx/html
-      - ./srcs/requirements/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
+      - ./srcs/requirements/nginx/conf:/etc/nginx/conf.d
     environment:
-      - NGINX_PORT=${NGINX_PORT}
-      - NGINX_DOC_ROOT=/usr/share/nginx/html
+      - DOMAIN=${DOMAIN}
+      - TLS_VERSION=${TLS_VERSION}
     restart: unless-stopped
     networks:
       - inception-network

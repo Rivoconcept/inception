@@ -1,35 +1,32 @@
 FROM debian:bullseye-slim
 
-LABEL app="mynginx" \
-      version="v1.0.0" \
-      description="Custom server nginx for inception"
+ARG DEBIAN_FRONTEND=noninteractive
+ARG DOMAIN=localhost
+ARG TLS_VERSION=TLSv1.3
 
-ENV NGINX_PORT=8080 \
-    NGINX_DOC_ROOT=/usr/share/nginx/html
+RUN apt-get update && \
+    apt-get install -y nginx openssl gettext-base && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y nginx \
-    && rm -rf /var/lib/apt/lists/*
+# Generate SSL certs
+RUN mkdir -p /etc/ssl/certs && \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/ssl/certs/key.pem \
+    -out /etc/ssl/certs/cert.pem \
+    -subj "/CN=${DOMAIN}" && \
+    chmod 600 /etc/ssl/certs/key.pem
 
-ARG UID=1000
-ARG GID=1000
+# Copy and process files
+COPY conf/nginx.conf /etc/nginx/conf.d/default.conf.template
+COPY dist/ /usr/share/nginx/html/
 
-RUN addgroup --gid $GID mygroup \
-    && adduser --disabled-password --gecos "" --uid $UID --gid $GID rhanitra
+# Set permissions
+RUN chown -R www-data:www-data /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html && \
+    envsubst '${DOMAIN} ${TLS_VERSION}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && \
+    envsubst '${DOMAIN} ${TLS_VERSION}' < /usr/share/nginx/html/index.html > /usr/share/nginx/html/index.html.processed && \
+    mv /usr/share/nginx/html/index.html.processed /usr/share/nginx/html/index.html
 
-
-WORKDIR $NGINX_DOC_ROOT
-
-RUN rm -rf ./* \
-    && mkdir -p /usr/share/nginx/html /var/run/nginx /var/log/nginx \
-    && chown -R rhanitra:mygroup /usr/share/nginx/html /var/run/nginx /var/log/nginx
-    
-COPY --chown=rhanitra:mygroup . .
-
-COPY --chown=rhanitra:mygroup /conf/default.conf /etc/nginx/conf.d/default.conf
-
-USER rhanitra
-
-EXPOSE $NGINX_PORT
+EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"]
-
