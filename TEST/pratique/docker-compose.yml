@@ -1,6 +1,7 @@
 services:
   mariadb:
     build: ./srcs/requirements/mariadb
+    image: mariadb:inception
     volumes:
       - db_data:/var/lib/mysql:rw
     environment:
@@ -18,6 +19,7 @@ services:
 
   wordpress:
     build: ./srcs/requirements/wordpress
+    image: wordpress:inception
     volumes:
       - wp_data:/var/www/html
     environment:
@@ -37,6 +39,7 @@ services:
 
   nginx:
     build: ./srcs/requirements/nginx
+    image: nginx:inception
     ports:
       - "443:443"
     volumes:
