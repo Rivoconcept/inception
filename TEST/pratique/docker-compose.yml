@@ -1,0 +1,59 @@
+services:
+  mariadb:
+    build: ./srcs/requirements/mariadb
+    volumes:
+      - db_data:/var/lib/mysql:rw
+    environment:
+      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress_password
+    privileged: true
+    restart: always
+    networks:
+      - inception-network
+    container_name: mariadb
+    ports:
+      - "3306:3306"
+
+  wordpress:
+    build: ./srcs/requirements/wordpress
+    volumes:
+      - wp_data:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress_password
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_TABLE_PREFIX: wp_
+    depends_on:
+      - mariadb
+    restart: always
+    networks:
+      - inception-network
+    container_name: wordpress
+    ports:
+      - "9000:9000"
+
+  nginx:
+    build: ./srcs/requirements/nginx
+    ports:
+      - "443:443"
+    volumes:
+      - wp_data:/var/www/html
+    depends_on:
+      - wordpress
+    restart: always
+    networks:
+      - inception-network
+    container_name: nginx
+
+volumes:
+  db_data:
+    driver: local
+  wp_data:
+    driver: local
+
+networks:
+  inception-network:
+    driver: bridge

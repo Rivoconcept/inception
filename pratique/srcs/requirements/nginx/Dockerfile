@@ -1,7 +1,7 @@
 FROM debian:bullseye-slim
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DOMAIN=localhost
+ARG DOMAIN=rhanitra.42.fr
 ARG TLS_VERSION=TLSv1.3
 
 RUN apt-get update && \
@@ -14,18 +14,21 @@ RUN mkdir -p /etc/ssl/certs && \
     -keyout /etc/ssl/certs/key.pem \
     -out /etc/ssl/certs/cert.pem \
     -subj "/CN=${DOMAIN}" && \
+    chmod 644 /etc/ssl/certs/cert.pem && \
     chmod 600 /etc/ssl/certs/key.pem
 
 # Copy and process files
-COPY conf/nginx.conf /etc/nginx/conf.d/default.conf.template
-COPY dist/ /usr/share/nginx/html/
+COPY /conf/default.conf /etc/nginx/conf.d/default.conf
+COPY /dist/ /usr/share/nginx/html/
 
-# Set permissions
-RUN chown -R www-data:www-data /usr/share/nginx/html && \
-    chmod -R 755 /usr/share/nginx/html && \
-    envsubst '${DOMAIN} ${TLS_VERSION}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && \
+# Set permissions and substitute variables
+RUN chmod -R 755 /usr/share/nginx/html && \
+    if [ -z "${DOMAIN}" ]; then echo "ERROR: DOMAIN is not set" && exit 1; fi && \
+    envsubst '${DOMAIN} ${TLS_VERSION}' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.tmp && \
+    mv /etc/nginx/conf.d/default.conf.tmp /etc/nginx/conf.d/default.conf && \
     envsubst '${DOMAIN} ${TLS_VERSION}' < /usr/share/nginx/html/index.html > /usr/share/nginx/html/index.html.processed && \
-    mv /usr/share/nginx/html/index.html.processed /usr/share/nginx/html/index.html
+    mv /usr/share/nginx/html/index.html.processed /usr/share/nginx/html/index.html && \
+    nginx -t
 
 EXPOSE 443
 
