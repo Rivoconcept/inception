@@ -10,7 +10,7 @@ services:
     extra_hosts:
       - "rhanitra.42.fr:127.0.0.1"
     image: nginx:v1.0.0
-    container_name: nginx
+    container_name: nginx_test
     ports:
       - "443:443"
     volumes:
@@ -26,7 +26,7 @@ services:
 
   mariadb:
     image: mariadb:10.6
-    container_name: mariadbr
+    container_name: mariadb_test
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress}
@@ -40,7 +40,7 @@ services:
 
   wordpress:
     image: wordpress:6.2
-    container_name: wordpress
+    container_name: wordpress_test
     environment:
       WORDPRESS_DB_HOST: mariadb
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE:-wordpress}
