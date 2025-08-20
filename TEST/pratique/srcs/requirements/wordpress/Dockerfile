@@ -39,10 +39,6 @@ RUN if [ -f wp-config-sample.php ]; then \
 
 # Copier les fichiers de configuration de WordPress
 COPY conf/ /var/www/html/wp-config/
-# Copier et configurer wp-config.php
-# COPY conf/wp-config.php /var/www/html/
-RUN chown www-data:www-data /var/www/html/wp-config.php && \
-    chmod 640 /var/www/html/wp-config.php
 
 # Exposer le port PHP-FPM (par défaut 9000)
 EXPOSE 9000

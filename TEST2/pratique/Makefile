@@ -13,11 +13,14 @@
 
 NAME = inception
 
-COMPOSE = docker-compose
-COMPOSE_FILE = -f docker-compose.yml
+COMPOSE = docker compose
+COMPOSE_FILE = -f ./srcs/docker-compose.yml
 ENV_FILE = --env-file srcs/.env
 
-all: up
+DOMAIN=rhanitra.42.fr
+
+
+all: up addHost
 
 up:
 	$(COMPOSE) $(ENV_FILE) $(COMPOSE_FILE) up --build -d
@@ -42,6 +45,15 @@ ps:
 
 exec:
 	$(COMPOSE) $(COMPOSE_FILE) exec
+
+addHost:
+	@echo "Add host $(DOMAIN)"
+	@grep -qxF "127.0.0.1 $(DOMAIN)" /etc/hosts || \
+		echo "127.0.0.1 $(DOMAIN)" | sudo tee -a /etc/hosts
+
+rmHost:
+	@echo "Remove host $(DOMAIN)"
+	@sudo sed -i '\|127.0.0.1[[:space:]]\+$(DOMAIN)|d' /etc/hosts
 
 fclean: down
 	docker system prune -af
