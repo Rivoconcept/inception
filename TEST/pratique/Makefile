@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: rhanitra <rhanitra@student.42antananari    +#+  +:+       +#+         #
+#    By: rivoinfo <rivoinfo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/07 18:21:32 by rhanitra          #+#    #+#              #
-#    Updated: 2025/08/07 18:21:47 by rhanitra         ###   ########.fr        #
+#    Updated: 2025/08/21 15:41:44 by rivoinfo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,6 +58,7 @@ rmHost:
 fclean: down
 	docker system prune -af
 	sudo rm -rf /home/rhanitra/data/*
+	docker volume rm -f srcs_db_data srcs_wp_data
 
 re: fclean all
 

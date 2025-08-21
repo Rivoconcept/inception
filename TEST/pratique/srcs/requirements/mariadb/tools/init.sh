@@ -1,32 +1,28 @@
 #!/bin/bash
 set -e
 
-# Initialize MySQL data directory
 if [ ! -d "/var/lib/mysql/mysql" ]; then
+    echo "[i] Initialisation de MariaDB..."
     mysql_install_db --user=mysql --datadir=/var/lib/mysql
 
-    # Start MySQL in the background
     mysqld --user=mysql &
     pid="$!"
 
-    # Wait for MySQL to start
     until mysqladmin ping >/dev/null 2>&1; do
         sleep 1
     done
 
-    # Initialize database
-    mysql -u root << EOF
-CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
-CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
-FLUSH PRIVILEGES;
-EOF
+    mysql -u root <<-EOSQL
+        CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+        CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
+        GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
+        ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
+        FLUSH PRIVILEGES;
+EOSQL
 
-    # Stop MySQL
     kill "$pid"
     wait "$pid"
+    echo "[i] Initialisation terminée."
 fi
 
-# Start MySQL
 exec mysqld --user=mysql
