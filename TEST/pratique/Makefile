@@ -58,7 +58,6 @@ rmHost:
 fclean: down
 	docker system prune -af
 	sudo rm -rf /home/rhanitra/data/*
-	docker volume rm -f srcs_db_data srcs_wp_data
 
 re: fclean all
 

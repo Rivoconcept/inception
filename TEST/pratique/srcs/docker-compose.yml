@@ -9,10 +9,10 @@ services:
       - .env
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE: ${MYSQL_DATABASE}
+      - MYSQL_USER: ${MYSQL_USER}
+      - MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
     ports:
@@ -24,16 +24,14 @@ services:
     build: ./requirements/wordpress
     image: wordpress:inception
     container_name: wordpress
-    env_file:
-      - .env
     restart: always
     depends_on:
       - mariadb
     environment:
-      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
-      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
-      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      - WORDPRESS_DB_HOST: mariadb:3306
+      - WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      - WORDPRESS_DB_USER: ${MYSQL_USER}
+      - WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - wp_data:/var/www/html
     ports:
@@ -49,9 +47,13 @@ services:
     depends_on:
       - wordpress
     ports:
-      - "${NGINX_HTTPS_PORT}:443"
+      - "443:443"
     volumes:
       - wp_data:/var/www/html
+      - ./requirements/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
+      - ./requirements/nginx/certs:/etc/ssl/certs
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
     networks:
       - inception-network
 

@@ -3,7 +3,7 @@
 // Database settings - from docker-compose/.env
 // ===================================================
 define( 'DB_NAME', getenv('WORDPRESS_DB_NAME') ?: 'inception' );
-define( 'DB_USER', getenv('WORDPRESS_DB_USER') ?: 'root' );
+define( 'DB_USER', getenv('WORDPRESS_DB_USER') ?: 'dbuser' );
 define( 'DB_PASSWORD', getenv('WORDPRESS_DB_PASSWORD') ?: 'dbPass' );
 define( 'DB_HOST', getenv('WORDPRESS_DB_HOST') ?: 'mariadb:3306' );
 define( 'DB_CHARSET', 'utf8' );
