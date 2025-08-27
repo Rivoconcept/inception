@@ -1,20 +1,14 @@
 #!/bin/bash
 
-
-# Attente de MariaDB si nécessaire
-until mysql -h mariadb -u wordpress -p"$(cat /run/secrets/dbpass)" -e "SELECT 1" >/dev/null 2>&1; do
-    echo "MariaDB n'est pas prête, attente..."
+# Wait for MariaDB to be ready
+echo "Waiting for MariaDB to be ready..."
+while ! mysql -h mariadb -u ${WORDPRESS_DB_USER} -p${WORDPRESS_DB_PASSWORD} -e "SELECT 1" >/dev/null 2>&1; do
     sleep 2
 done
 
-# Créer wp-config.php avec secrets
-wp config create \
-  --dbname=wordpress \
-  --dbuser=wordpress \
-  --dbpass="$(cat /run/secrets/dbpass)" \
-  --dbhost=mariadb \
-  --allow-root
+echo "MariaDB is ready!"
 
+# Check if WordPress is already installed
 if ! wp core is-installed --allow-root; then
     echo "Installing WordPress..."
     
@@ -23,7 +17,7 @@ if ! wp core is-installed --allow-root; then
         --url=${WORDPRESS_URL} \
         --title="${WORDPRESS_TITLE}" \
         --admin_user=${WORDPRESS_ADMIN_USER} \
-        --admin_password=$(cat /run/secrets/wppassadmin) \
+        --admin_password=${WORDPRESS_ADMIN_PASSWORD} \
         --admin_email=${WORDPRESS_ADMIN_EMAIL} \
         --skip-email \
         --allow-root
@@ -39,6 +33,6 @@ fi
     wp user create ${WORDPRESS_USER} ${WORDPRESS_USER_EMAIL} \
         --user_pass=$(cat /run/secrets/wppassuser) \
         --allow-root
-
+        
 # Start PHP-FPM
 exec php-fpm7.4 -F 

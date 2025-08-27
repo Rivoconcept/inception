@@ -1,0 +1,27 @@
+# Fichiers de configuration sensibles
+.env
+.env.*
+
+# Docker secrets
+/secrets/
+/requirements/**/secrets/
+/inception/**/secrets/
+/TEST0/TEST/inception/secrets/
+/../secrets/
+
+# WordPress sensitive files
+wp-config.php
+
+# Logs et fichiers temporaires
+*.log
+*.tmp
+*.swp
+*.bak
+*.key
+# Docker volumes et données persistantes
+/db_data/
+/wp_data/
+
+# Node / Composer / autres dépendances (si utilisées)
+node_modules/
+vendor/

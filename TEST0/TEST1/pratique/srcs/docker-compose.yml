@@ -6,11 +6,13 @@ services:
     image: mariadb:inception
     container_name: mariadb
     restart: always
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/dbrootpass
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD_FILE: /run/secrets/dbpass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -20,9 +22,6 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - inception-network
-    secrets:
-      - dbpass
-      - dbrootpass
 
   wordpress:
     build: ./requirements/wordpress
@@ -32,22 +31,17 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
-      WORDPRESS_DB_HOST: mariadb
-      WORDPRESS_DB_NAME: wordpress
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/dbpass
-      WORDPRESS_ADMIN_PASSWORD_FILE: /run/secrets/wppassadmin
-      WORDPRESS_USER_PASSWORD_FILE: /run/secrets/wppassuser
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
     volumes:
       - wp_data:/var/www/html
     networks:
       - inception-network
-    secrets:
-      - dbpass
-      - wppassadmin
-      - wppassuser
-    command: ["/bin/bash", "/usr/src/auto-install.sh"]  # ton script auto-install.sh doit être copié dans l'image
 
   nginx:
     build: ./requirements/nginx
@@ -78,12 +72,12 @@ networks:
   inception-network:
     driver: bridge
 
-secrets:
-  dbpass:
-    file: ../secrets/mdpMysql.txt
-  dbrootpass:
-    file: ../secrets/mdpdbroot.txt
-  wppassadmin:
-    file: ../secrets/mdpwpadmin.txt
-  wppassuser:
-    file: ../secrets/mdpwpuser.txt
+# secrets:
+#   dbpass:
+#     file: ../secrets/mdpMysql.txt
+#   dbrootpass:
+#     file: ../secrets/mdpdbroot.txt
+#   wppassadmin:
+#     file: ../secrets/mdpwpadmin.txt
+#   wppassuser:
+#     file: ../secrets/mdpwpuser.txt

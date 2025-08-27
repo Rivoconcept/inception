@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y nginx openssl netcat && rm -rf /var/lib
 
 COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
 
-COPY ./start.sh /start.sh
+COPY ./conf/start.sh /start.sh
 RUN chmod +x /start.sh
 
 EXPOSE 443
