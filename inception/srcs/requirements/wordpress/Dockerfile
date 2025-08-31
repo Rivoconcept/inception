@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     php7.4-gd \
     php7.4-xml \
     php7.4-curl \
-    curl wget \
+    curl wget unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Installer WP-CLI
@@ -21,19 +21,13 @@ RUN mkdir -p /run/php /var/www/html \
 
 WORKDIR /var/www/html
 
-# Télécharger et installer WordPress
-RUN curl -O https://wordpress.org/latest.tar.gz && \
-    tar -xvzf latest.tar.gz --strip-components=1 && \
-    rm latest.tar.gz
-
 COPY ./conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 COPY ./tools/auto-install.sh /auto-install.sh
 
-RUN chown -R www-data:www-data /var/www/html && \
-    chmod +x /auto-install.sh
+RUN chmod +x /auto-install.sh
+
+RUN echo "<?php header('HTTP/1.1 200 OK'); echo 'OK'; ?>" > /var/www/html/health.php
 
 EXPOSE 9000
 
-# Lancer le script d'installation WordPress
 CMD ["/auto-install.sh"]
-

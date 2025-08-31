@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# Si le dossier WordPress est vide, téléchargez-le
+if [ -z "$(ls -A /var/www/html)" ]; then
+    echo "[INFO] Downloading WordPress..."
+    curl -O https://wordpress.org/latest.tar.gz
+    tar -xvzf latest.tar.gz --strip-components=1
+    rm latest.tar.gz
+    chown -R www-data:www-data /var/www/html
+fi
+
 echo "[INFO] Creating wp-config.php..."
 wp config create \
     --dbname="$WORDPRESS_DB_NAME" \
@@ -22,10 +31,14 @@ if ! wp core is-installed --allow-root; then
         --skip-email \
         --allow-root
 
-    wp user create "${WORDPRESS_USER}" "${WORDPRESS_USER_EMAIL}" \
+    echo "[INFO] Création de l'utilisateur ${WORDPRESS_USER}..."
+    if ! wp user create "${WORDPRESS_USER}" "${WORDPRESS_USER_EMAIL}" \
         --user_pass="$(cat /run/secrets/WORDPRESS_USER_PASSWORD)" \
         --role=subscriber \
-        --allow-root
+        --allow-root; then
+        echo "[WARNING] Échec de la création de l'utilisateur, peut-être existe-t-il déjà"
+    fi
+
 
     wp theme install twentytwentythree --activate --allow-root
 
@@ -34,6 +47,4 @@ else
     echo "[INFO] WordPress is already installed!"
 fi
 
-
-# export WORDPRESS_DB_PASSWORD="$(cat /run/secrets/WORDPRESS_DB_PASSWORD)"
 exec php-fpm7.4 -F

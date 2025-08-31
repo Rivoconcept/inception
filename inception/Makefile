@@ -19,8 +19,10 @@ ENV_FILE = --env-file srcs/.env
 
 DOMAIN=rhanitra.42.fr
 
+export USER = $(shell whoami)
+export DATA_PATH = /home/$(USER)/data
 
-all: up addHost
+all: init-dirs up addHost
 
 up:
 	$(COMPOSE) $(ENV_FILE) $(COMPOSE_FILE) up --build -d
@@ -54,6 +56,23 @@ addHost:
 rmHost:
 	@echo "Remove host $(DOMAIN)"
 	@sudo sed -i '\|127.0.0.1[[:space:]]\+$(DOMAIN)|d' /etc/hosts
+
+init-dirs:
+	@if [ ! -d "$(DATA_PATH)/db_data" ]; then \
+		mkdir -p "$(DATA_PATH)/db_data"; \
+		echo "Créé: $(DATA_PATH)/db_data"; \
+	fi
+	@if [ ! -d "$(DATA_PATH)/wp_data" ]; then \
+		mkdir -p "$(DATA_PATH)/wp_data"; \
+		echo "Créé: $(DATA_PATH)/wp_data"; \
+	fi
+	@chmod 755 "$(DATA_PATH)"
+	@if ! grep -q "DATA_PATH=" srcs/.env; then \
+		echo "DATA_PATH=$(DATA_PATH)" >> srcs/.env; \
+	fi
+	@if ! grep -q "USER=" srcs/.env; then \
+		echo "USER=$(USER)" >> srcs/.env; \
+	fi
 
 fclean: down
 	docker system prune -af
