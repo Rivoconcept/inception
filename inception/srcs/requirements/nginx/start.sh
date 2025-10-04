@@ -12,10 +12,13 @@ if [ ! -f "$CRT_FILE" ] || [ ! -f "$KEY_FILE" ]; then
         -keyout "$KEY_FILE" \
         -out "$CRT_FILE" \
         -subj "/C=FR/ST=France/L=Paris/O=42/OU=Inception/CN=${DOMAIN_NAME}"
+
     chmod 644 "$CRT_FILE"
-    chmod 600 "$KEY_FILE"
+    chmod 600 "$KEY_FILE" 
+
+    chown root:root "$KEY_FILE"
+    chown root:root "$CRT_FILE"
 fi
 
 echo "[INFO] Starting NGINX..."
-
 nginx -g "daemon off;"

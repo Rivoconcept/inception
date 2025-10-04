@@ -22,7 +22,7 @@ DOMAIN=rhanitra.42.fr
 export USER = $(shell whoami)
 export DATA_PATH = /home/$(USER)/data
 
-all: init-dirs up addHost
+all: init-dirs init-volumes up addHost
 
 up:
 	$(COMPOSE) $(ENV_FILE) $(COMPOSE_FILE) up --build -d
@@ -72,6 +72,14 @@ init-dirs:
 	fi
 	@if ! grep -q "USER=" srcs/.env; then \
 		echo "USER=$(USER)" >> srcs/.env; \
+	fi
+
+init-volumes:
+	@if ! docker volume inspect db_data >/dev/null 2>&1; then \
+		docker volume create --name db_data --opt type=none --opt device=${DATA_PATH}/db_data --opt o=bind; \
+	fi
+	@if ! docker volume inspect wp_data >/dev/null 2>&1; then \
+		docker volume create --name wp_data --opt type=none --opt device=${DATA_PATH}/wp_data --opt o=bind; \
 	fi
 
 fclean: down
