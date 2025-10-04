@@ -20,13 +20,21 @@ if [ ! -d "$DATA_DIR/mysql" ]; then
         sleep 1
     done
     
-    mysql -uroot -S /var/run/mysqld/mysqld.sock <<EOF
+    mysql -uroot -p"$(cat /run/secrets/MYSQL_ROOT_PASSWORD)" << EOF
 CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
 CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '$(cat /run/secrets/MYSQL_PASSWORD)';
 GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
 UPDATE mysql.user SET password=PASSWORD('$(cat /run/secrets/MYSQL_ROOT_PASSWORD)') WHERE user='root';
 FLUSH PRIVILEGES;
 EOF
+
+
+#     mysql -uroot -S /var/run/mysqld/mysqld.sock <<EOF
+# CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
+# CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '$(cat /run/secrets/MYSQL_PASSWORD)';
+# GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
+# FLUSH PRIVILEGES;
+# EOF
 
     kill $MYSQL_PID
     wait $MYSQL_PID

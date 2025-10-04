@@ -75,7 +75,7 @@ services:
     volumes:
       - ${DATA_PATH}/wp_data:/var/www/html
       - ./requirements/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
-      - ../secrets/certs:/etc/ssl/private/:ro
+      - ../secrets/certs:/etc/ssl/private/
     networks:
       - inception-network
 
