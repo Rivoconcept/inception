@@ -60,11 +60,11 @@ rmHost:
 init-dirs:
 	@if [ ! -d "$(DATA_PATH)/db_data" ]; then \
 		mkdir -p "$(DATA_PATH)/db_data"; \
-		echo "Créé: $(DATA_PATH)/db_data"; \
+		echo "Create: $(DATA_PATH)/db_data"; \
 	fi
 	@if [ ! -d "$(DATA_PATH)/wp_data" ]; then \
 		mkdir -p "$(DATA_PATH)/wp_data"; \
-		echo "Créé: $(DATA_PATH)/wp_data"; \
+		echo "Create: $(DATA_PATH)/wp_data"; \
 	fi
 	@chmod 755 "$(DATA_PATH)"
 	@if ! grep -q "DATA_PATH=" srcs/.env; then \
@@ -76,7 +76,6 @@ init-dirs:
 
 fclean: down
 	docker system prune -af
-# 	sudo rm -rf /home/rhanitra/data/*
 
 re: fclean all
 

@@ -11,11 +11,8 @@ if [ ! -d "$DATA_DIR/mysql" ]; then
     
     mysql_install_db --user=mysql --datadir="$DATA_DIR" --skip-test-db
     
-    # Démarrer MariaDB temporairement
-    mysqld --datadir="$DATA_DIR" --socket=/var/run/mysqld/mysqld.sock &
-    MYSQL_PID=$!
+    mysqld --datadir="$DATA_DIR" --socket=/var/run/mysqld/mysqld.sock & MYSQL_PID=$!
     
-    # Attendre que MySQL soit prêt
     for i in {1..30}; do
         if mysql -uroot -S /var/run/mysqld/mysqld.sock -e "SELECT 1" >/dev/null 2>&1; then
             break
@@ -23,7 +20,6 @@ if [ ! -d "$DATA_DIR/mysql" ]; then
         sleep 1
     done
     
-    # Exécuter les commandes d'initialisation
     mysql -uroot -S /var/run/mysqld/mysqld.sock <<EOF
 CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
 CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '$(cat /run/secrets/MYSQL_PASSWORD)';

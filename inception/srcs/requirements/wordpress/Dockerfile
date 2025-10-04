@@ -1,6 +1,5 @@
 FROM debian:bullseye
 
-# Installer PHP-FPM et extensions nécessaires
 RUN apt-get update && apt-get install -y \
     php7.4-fpm \
     php7.4-mysql \
@@ -10,12 +9,10 @@ RUN apt-get update && apt-get install -y \
     curl wget unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Installer WP-CLI
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
     && chmod +x wp-cli.phar \
     && mv wp-cli.phar /usr/local/bin/wp
 
-# Créer dossiers et permissions
 RUN mkdir -p /run/php /var/www/html \
     && chown -R www-data:www-data /var/www/html /run/php
 

@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-# Si le dossier WordPress est vide, téléchargez-le
 if [ -z "$(ls -A /var/www/html)" ]; then
     echo "[INFO] Downloading WordPress..."
     curl -O https://wordpress.org/latest.tar.gz
@@ -31,12 +30,12 @@ if ! wp core is-installed --allow-root; then
         --skip-email \
         --allow-root
 
-    echo "[INFO] Création de l'utilisateur ${WORDPRESS_USER}..."
+    echo "[INFO] Create user ${WORDPRESS_USER}..."
     if ! wp user create "${WORDPRESS_USER}" "${WORDPRESS_USER_EMAIL}" \
         --user_pass="$(cat /run/secrets/WORDPRESS_USER_PASSWORD)" \
         --role=subscriber \
         --allow-root; then
-        echo "[WARNING] Échec de la création de l'utilisateur, peut-être existe-t-il déjà"
+        echo "[WARNING] User creation failed or user already exists."
     fi
 
 
